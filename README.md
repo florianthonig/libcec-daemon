@@ -27,12 +27,20 @@ sudo apt-get install libboost-program-options-dev libboost-thread-dev libboost-s
 * Also we need the libcec (version 3.x) libraries. Pulse eight provides east way to install
 
 ```
-apt-get install libcec-dev libcec-platform-dev
-
-# or manually build them:
-wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
-sudo bash install-libcec.sh
+apt-get install libcec-dev
 ```
+
+* We need to build the platform stuff from pulse eight (for that we need cmake)
+'''
+# so install cmake if you don't already have
+sudo apt install cmake
+git clone https://github.com/Pulse-Eight/platform.git p8-platform
+cd p8-platform
+mkdir build && cd build
+cmake ..
+make
+sudo make install
+'''
 
 * Now build libcec-daemon
 
