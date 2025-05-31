@@ -31,7 +31,8 @@ apt-get install libcec-dev
 ```
 
 * We need to build the platform stuff from pulse eight (for that we need cmake)
-'''
+
+```
 # so install cmake if you don't already have
 sudo apt install cmake
 git clone https://github.com/Pulse-Eight/platform.git p8-platform
@@ -40,7 +41,7 @@ mkdir build && cd build
 cmake ..
 make
 sudo make install
-'''
+```
 
 * Now build libcec-daemon
 
