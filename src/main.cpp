@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <csignal>
 #include <cstdlib>
+#include <string>
 #include <vector>
 #include <unistd.h>
 
@@ -323,9 +324,29 @@ int Main::onCecLogMessage(const cec_log_message &message) {
 int Main::onCecKeyPress(const cec_keypress &key) {
 	LOG4CPLUS_DEBUG(logger, "Main::onCecKeyPress(" << key << ")");
 
+	// Enhanced logging: Show human-readable key name and mapping info
+	std::map<cec_user_control_code, const char *>::const_iterator keyNameIt = Cec::cecUserControlCodeName.find(key.keycode);
+	const char* keyName = (keyNameIt != Cec::cecUserControlCodeName.end()) ? keyNameIt->second : "UNKNOWN";
+	
+	LOG4CPLUS_DEBUG(logger, "CEC Key: " << keyName << " (code=" << key.keycode << ") duration=" << key.duration << "ms");
+
 	// Check bounds and find uinput code for this cec keypress
 	if (key.keycode >= 0 && key.keycode <= CEC_USER_CONTROL_CODE_MAX) {
 		const list<__u16> & uinputKeys = uinputCecMap[key.keycode];
+
+		// Log the mapping information
+		if (uinputKeys.empty()) {
+			LOG4CPLUS_DEBUG(logger, "  -> No mapping defined for this key");
+		} else {
+			string mappingInfo = "  -> Mapped to uinput keys: ";
+			bool first = true;
+			for (std::list<__u16>::const_iterator ukeys = uinputKeys.begin(); ukeys != uinputKeys.end(); ++ukeys) {
+				if (!first) mappingInfo += ", ";
+				mappingInfo += std::to_string(*ukeys);
+				first = false;
+			}
+			LOG4CPLUS_DEBUG(logger, mappingInfo);
+		}
 
 		if ( !uinputKeys.empty() ) {
 			if( key.duration == 0 ) {
@@ -404,6 +425,9 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 			}
 			uinput.sync();
 		}
+	}
+	else {
+		LOG4CPLUS_WARN(logger, "CEC Key code " << key.keycode << " is outside valid range (0-" << CEC_USER_CONTROL_CODE_MAX << ")");
 	}
 
 	return 1;
