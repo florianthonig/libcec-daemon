@@ -4,6 +4,8 @@
 #include <string>
 #include <queue>
 #include <list>
+#include <map>
+#include <cstdint>
 
 class Command
 {
@@ -26,14 +28,14 @@ class Main : public CecCallback {
 		// Main controls
 		Cec cec;
 		UInput uinput;
-		char cec_name[HOST_NAME_MAX];
+		static char cec_name[HOST_NAME_MAX];
 
 		// Some config params
 		bool makeActive;
 		bool running; // TODO Change this to be threadsafe!. Voiatile or better
 
 		//
-		std::list<__u16> lastUInputKeys; // for key(s) repetition
+		std::list<uint16_t> lastUInputKeys; // for key(s) repetition
 
 		//
 		Main();
@@ -45,7 +47,7 @@ class Main : public CecCallback {
 
 		static void signalHandler(int sigNum);
 
-		static const std::vector<std::list<__u16>> & setupUinputMap();
+		static const std::vector<std::list<uint16_t>> & setupUinputMap();
 		std::queue<Command> commands;
 
 		std::string onStandbyCommand;
@@ -58,9 +60,15 @@ class Main : public CecCallback {
 
 		void push(Command command);
 
+		// Key mapping configuration
+		static std::map<std::string, uint16_t> keyNameToCode;
+		static std::map<std::string, CEC::cec_user_control_code> cecKeyNameToCode;
+		static void initializeKeyMaps();
+		static std::vector<std::list<uint16_t>> createDefaultUinputMap();
+
 	public:
 
-		static const std::vector<std::list<__u16>> uinputCecMap;
+		static const std::vector<std::list<uint16_t>> uinputCecMap;
 
 		int onCecLogMessage(const CEC::cec_log_message &message);
 		int onCecKeyPress(const CEC::cec_keypress &key);
@@ -85,5 +93,8 @@ class Main : public CecCallback {
 		void setOnActivateCommand(const std::string &cmd) {this->onActivateCommand = cmd;};
 		void setOnDeactivateCommand(const std::string &cmd) {this->onDeactivateCommand = cmd;};
 		void setTargetAddress(const HDMI::address & address) {cec.setTargetAddress(address);};
+		
+		// Key mapping configuration
+		static bool loadKeyMappingFromFile(const std::string& filename);
 };
 

@@ -63,6 +63,7 @@ Allowed options:
   -v [ --verbose ]          verbose output (use -vv for more)
   -q [ --quiet ]            quiet output (print almost nothing)
   -a [ --donotactivate ]    do not activate device on startup
+  -k [ --keymap ] <file>    load key mapping from file
   --onstandby <path>        command to run on standby
   --onactivate <path>       command to run on activation
   --ondeactivate <path>     command to run on deactivation
@@ -99,4 +100,44 @@ A libcec-daemon can be instantiated for each HDMI-CEC adapter available to the
 host hardware, and the daemon will automatically use to the first detected one.
 If more than one adapter is available, they should be specified by the usb
 argument using either its sys-path or dev-path as listed by the --list argument.
+```
+
+Key Mapping Configuration
+=========================
+libcec-daemon supports configurable key mappings through external configuration files,
+allowing you to customize how CEC remote control keys are mapped to system input events.
+
+## Usage
+
+```bash
+# Use Jellyfin-optimized mappings
+libcec-daemon --keymap keymaps/jellyfin.conf
+
+# With debug output to see key events
+libcec-daemon -v --keymap keymaps/jellyfin.conf
+```
+
+## Configuration Files
+
+* `keymaps/jellyfin.conf` - Optimized for Jellyfin Media Player (SELECT→ENTER, EXIT→ESC)
+* `keymaps/default.conf` - Matches the original hardcoded mappings
+
+## File Format
+
+Configuration files use a simple `CEC_KEY=UINPUT_KEY` format:
+```
+# Comments start with #
+SELECT=ENTER
+EXIT=ESC
+UP=UP
+DOWN=DOWN
+```
+
+See the included configuration files for complete lists of available CEC and uinput key names.
+
+## Debugging
+
+Use the `-v` flag to see key press events and mapping information:
+```bash
+libcec-daemon -v --keymap your_config.conf
 ```
