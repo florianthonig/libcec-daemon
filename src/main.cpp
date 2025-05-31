@@ -58,6 +58,7 @@ static boost::condition_variable libcec_cond;
 const vector<list<uint16_t>> Main::uinputCecMap = Main::setupUinputMap();
 map<string, uint16_t> Main::keyNameToCode;
 map<string, cec_user_control_code> Main::cecKeyNameToCode;
+char Main::cec_name[HOST_NAME_MAX];
 
 enum
 {
